@@ -58,7 +58,7 @@ function renderCase() {
   answered = false; $('#caseFeedback').replaceChildren(); $('#caseFeedback').className = ''; $('#nextCase').hidden = true;
     const c = cases[ci];
   $('#case').innerHTML = '<div class="case-layout"><div class="case-copy"><p class="eyebrow">QUAN SÁT & NHẬN XÉT</p><h3></h3><p class="case-description"></p></div><div class="case-visual"></div></div><div class="choices"></div>';
-  $('#case h3').textContent = c[0]; $('#case .case-description').textContent = c[1]; $('#case .case-visual').innerHTML = caseVisual(ci);
+  $('#case').setAttribute('role', 'region'); $('#case').setAttribute('tabindex', '-1'); $('#case').setAttribute('aria-label', 'Tình huống ' + (ci + 1)); $('#case h3').textContent = c[0]; $('#case .case-description').textContent = c[1]; $('#case .case-visual').innerHTML = caseVisual(ci);
   ['Phù hợp với nhiệm vụ', 'Cần sửa', 'Cần bổ sung'].forEach((text, i) => {
     const b = el('button', 'secondary', text); b.onclick = () => {
       if (answered) return; answered = true; quizAnswers[ci] = i;
@@ -79,7 +79,7 @@ function finishQuiz() {
   $('#quizToModel').onclick = () => openTab('model'); $('#restartQuiz').onclick = () => { ci = 0; quizAnswers = Array(10).fill(null); renderCase(); };
   updateJourney();
 }
-$('#nextCase').onclick = () => { if (ci < 9) { ci++; renderCase(); } else finishQuiz(); };
+$('#nextCase').onclick = () => { if (ci < 9) { ci++; renderCase(); $('#case').focus({ preventScroll: true }); $('#case').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); } else finishQuiz(); };
 
 let samples = [[], []], model = null, modelInfo = null, tests = [], pending = null, dirty = true;
 let demoMode = false, demoCounter = 0, version = 0, rounds = [], testBank = [], uploadJobs = 0, testRequest = 0, roundSaved = false;
@@ -88,7 +88,7 @@ const names = () => [$('#name0').value.trim() || 'Nhãn A', $('#name1').value.tr
 function keyFor(url) { let h = 2166136261; for (let i = 0; i < url.length; i++) { h ^= url.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16); }
 function invalidateModel() { dirty = true; pending = null; testRequest++; $('#mark').hidden = true; }
 function vector(img) { const c = document.createElement('canvas'); c.width = c.height = 16; const x = c.getContext('2d', { willReadFrequently: true }); x.fillStyle = '#fff'; x.fillRect(0, 0, 16, 16); x.drawImage(img, 0, 0, 16, 16); const data = x.getImageData(0, 0, 16, 16).data, v = []; for (let i = 0; i < data.length; i += 4) v.push(data[i] / 255, data[i + 1] / 255, data[i + 2] / 255); return v; }
-function readData(url) { return new Promise((resolve, reject) => { const img = new Image(); img.onload = () => { try { const c = document.createElement('canvas'), s = Math.min(1, 384 / Math.max(img.width, img.height)); c.width = Math.max(1, Math.round(img.width * s)); c.height = Math.max(1, Math.round(img.height * s)); const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height); const data = c.toDataURL('image/jpeg', .8); resolve({ url: data, v: vector(img), key: keyFor(data) }); } catch { reject(Error('Không xử lý được ảnh. Hãy thử ảnh JPG hoặc PNG.')); } }; img.onerror = () => reject(Error('Không đọc được ảnh. Hãy thử ảnh JPG hoặc PNG.')); img.src = url; }); }
+function readData(url, origin = 'upload') { return new Promise((resolve, reject) => { const img = new Image(); img.onload = () => { try { const c = document.createElement('canvas'), s = Math.min(1, 384 / Math.max(img.width, img.height)); c.width = Math.max(1, Math.round(img.width * s)); c.height = Math.max(1, Math.round(img.height * s)); const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height); const data = c.toDataURL('image/jpeg', .8); resolve({ url: data, v: vector(img), key: keyFor(data), origin }); } catch { reject(Error('Không xử lý được ảnh. Hãy thử ảnh JPG hoặc PNG.')); } }; img.onerror = () => reject(Error('Không đọc được ảnh. Hãy thử ảnh JPG hoặc PNG.')); img.src = url; }); }
 async function fromFile(f) { if (!f.type.startsWith('image/')) throw Error('Hãy chọn tệp ảnh.'); if (f.size > 25 * 1024 * 1024) throw Error('Ảnh quá lớn. Hãy dùng ảnh dưới 25 MB.'); const u = URL.createObjectURL(f); try { return await readData(u); } finally { URL.revokeObjectURL(u); } }
 function updateJourney() {
   const done = [qualityDone, hasTrained || rounds.length > 0, rounds.length >= 2 && $('#conclusion').value.trim().length > 0];
@@ -126,7 +126,7 @@ function train() {
   if (names()[0].toLocaleLowerCase() === names()[1].toLocaleLowerCase()) { $('#trainStatus').textContent = 'Hai nhãn cần có tên khác nhau.'; return; }
   if (samples.some(a => a.length < 3)) { $('#trainStatus').textContent = 'Cần ít nhất 3 ảnh mỗi nhãn. Mục tiêu của bài là 6 ảnh mỗi nhãn.'; return; }
   model = samples.flatMap((a, i) => a.map(s => ({ v: s.v.slice(), label: i, url: s.url, key: s.key })));
-  version++; modelInfo = { names: names(), counts: samples.map(a => a.length), demo: demoMode }; dirty = false; tests = []; pending = null; roundSaved = false; hasTrained = true; testRequest++; $('#mark').hidden = true;
+  version++; modelInfo = { names: names(), counts: samples.map(a => a.length), demo: demoMode, source: sourceOf(samples.flat().map(s => s.origin || 'upload')) }; dirty = false; tests = []; pending = null; roundSaved = false; hasTrained = true; testRequest++; $('#mark').hidden = true;
   $('#prediction').innerHTML = '<div class="prediction-empty"><span aria-hidden="true">✓</span><p>Mô hình đã sẵn sàng.<br>Hãy chọn một ảnh kiểm tra.</p></div>'; $('#modelMessage').textContent = 'Đã huấn luyện. Dùng ảnh chưa có trong bộ học.'; update();
 }
 $('#train').onclick = train;
@@ -138,7 +138,7 @@ function predict(sample) {
   if (tests.some(t => t.key === key)) { $('#modelMessage').textContent = 'Ảnh này đã được ghi trong lượt hiện tại. Hãy chọn ảnh khác.'; return false; }
   const near = model.map(s => ({ label: s.label, url: s.url, d: s.v.reduce((sum, value, i) => sum + (value - sample.v[i]) ** 2, 0) })).sort((a, b) => a.d - b.d).slice(0, 3);
   const votes0 = near.filter(s => s.label === 0).length, label = votes0 >= 2 ? 0 : 1;
-  pending = { key, label, version, votes: Math.max(votes0, 3 - votes0) };
+  pending = { key, label, version, origin: sample.origin || 'upload', votes: Math.max(votes0, 3 - votes0) };
   const result = el('div', 'predictionResult'), img = new Image(), info = el('div'); img.src = sample.url; img.alt = 'Ảnh đang kiểm tra';
   info.append(el('p', 'eyebrow', 'DỰ ĐOÁN CỦA MÔ HÌNH'), el('p', 'resultLabel', modelInfo.names[label]), el('p', 'vote', pending.votes + '/3 ví dụ gần nhất thuộc nhãn này. Không phải xác suất chắc chắn đúng.')); result.append(img, info);
   const neighbors = el('div', 'neighbors'), list = el('div', 'neighbor-list'); neighbors.append(el('p', '', 'Ba ảnh mẫu gần nhất mà mô hình đã dùng:'));
@@ -148,7 +148,7 @@ function predict(sample) {
 [0, 1].forEach(i => { $('#truth' + i).onclick = () => {
   if (!pending) return;
   if (dirty || pending.version !== version) { pending = null; $('#mark').hidden = true; $('#modelMessage').textContent = 'Dữ liệu đã đổi. Hãy huấn luyện lại trước khi kiểm tra tiếp.'; return; }
-  const item = { key: pending.key, truth: modelInfo.names[i], prediction: modelInfo.names[pending.label], ok: i === pending.label, version: pending.version }; tests.push(item); pending = null; $('#mark').hidden = true; $('#modelMessage').textContent = item.ok ? 'Đã ghi: dự đoán đúng. Thử ảnh tiếp theo.' : 'Đã ghi: dự đoán sai. Ghi lại nền, góc chụp hoặc đồ vật trong ảnh này.'; update();
+  const item = { key: pending.key, truth: modelInfo.names[i], prediction: modelInfo.names[pending.label], ok: i === pending.label, version: pending.version, origin: pending.origin }; tests.push(item); pending = null; $('#mark').hidden = true; $('#modelMessage').textContent = item.ok ? 'Đã ghi: dự đoán đúng. Thử ảnh tiếp theo.' : 'Đã ghi: dự đoán sai. Ghi lại nền, góc chụp hoặc đồ vật trong ảnh này.'; update();
 }; });
 ['#testFile', '#testCapture'].forEach(s => { $(s).onchange = async event => { const token = ++testRequest; try { if (event.target.files[0]) { const sample = await fromFile(event.target.files[0]); if (token === testRequest) predict(sample); } } catch (e) { $('#modelMessage').textContent = e.message; } event.target.value = ''; }; });
 $('#bankFiles').onchange = async event => {
@@ -163,15 +163,18 @@ $('#demo').onclick = async () => {
   if (uploadJobs) return;
   if (samples.some(a => a.length) && !confirm('Bộ minh họa sẽ thay ảnh huấn luyện và ảnh kiểm tra hiện tại. Nhật ký đã lưu vẫn được giữ. Tiếp tục?')) return;
   uploadJobs++; invalidateModel(); samples = [[], []]; testBank = []; model = null; tests = []; roundSaved = false; update();
-  try { for (let i = 0; i < 2; i++) for (let j = 0; j < 6; j++) samples[i].push(await readData(synthetic(i, j))); for (let j = 0; j < 4; j++) testBank.push(await readData(synthetic(j % 2, j + 5, j < 2 ? '#e9edf2' : '#dceae4'))); $('#name0').value = 'Cốc'; $('#name1').value = 'Chai'; demoMode = true; demoCounter = 0; $('#demoTest').hidden = false; $('#modelMessage').textContent = 'Đã nạp hình vẽ minh họa: 12 ảnh học và 4 ảnh kiểm tra riêng. Bấm Huấn luyện để thử.'; } catch { $('#modelMessage').textContent = 'Không tạo được bộ minh họa. Em vẫn có thể thêm ảnh từ thiết bị.'; }
+  try { for (let i = 0; i < 2; i++) for (let j = 0; j < 6; j++) samples[i].push(await readData(synthetic(i, j), 'demo')); for (let j = 0; j < 4; j++) testBank.push(await readData(synthetic(j % 2, j + 5, j < 2 ? '#e9edf2' : '#dceae4'), 'demo')); $('#name0').value = 'Cốc'; $('#name1').value = 'Chai'; demoMode = true; demoCounter = 0; $('#demoTest').hidden = false; $('#modelMessage').textContent = 'Đã nạp hình vẽ minh họa: 12 ảnh học và 4 ảnh kiểm tra riêng. Bấm Huấn luyện để thử.'; } catch { $('#modelMessage').textContent = 'Không tạo được bộ minh họa. Em vẫn có thể thêm ảnh từ thiết bị.'; }
   finally { uploadJobs--; update(); }
 };
 $('#demoTest').onclick = () => { if (testBank.length) predict(testBank[demoCounter++ % testBank.length]); };
+function sourceOf(origins) { const demo = origins.some(o => o === 'demo' || o === 'mixed'), upload = origins.some(o => o === 'upload' || o === 'mixed'); return demo && upload ? 'mixed' : demo ? 'demo' : 'upload'; }
+function sourceLabel(r) { return r.source === 'mixed' ? 'Ảnh tự chọn và hình vẽ minh họa' : r.demo || r.source === 'demo' ? 'Hình vẽ minh họa tổng hợp' : 'Ảnh tự chọn'; }
 function persist() { try { localStorage.setItem('datalab-rounds', JSON.stringify(rounds)); localStorage.setItem('datalab-conclusion', $('#conclusion').value); } catch { $('#reportStatus').textContent = 'Trình duyệt không cho lưu nhật ký. Hãy tải báo cáo trước khi đóng trang.'; } }
 $('#saveRound').onclick = () => {
   if (roundSaved) return;
   if (!tests.length || !modelInfo) { $('#modelMessage').textContent = 'Cần chọn nhãn thật cho ít nhất một ảnh kiểm tra trước khi lưu.'; return; }
-  rounds.push({ version, counts: modelInfo.counts.slice(), names: modelInfo.names.slice(), correct: tests.filter(t => t.ok).length, total: tests.length, change: $('#change').value, tests: tests.map(t => ({ ...t })), demo: modelInfo.demo });
+  const source = sourceOf([modelInfo.source || (modelInfo.demo ? 'demo' : 'upload'), ...tests.map(t => t.origin || 'upload')]);
+  rounds.push({ source, version, counts: modelInfo.counts.slice(), names: modelInfo.names.slice(), correct: tests.filter(t => t.ok).length, total: tests.length, change: $('#change').value, tests: tests.map(t => ({ ...t })), demo: source === 'demo' });
   roundSaved = true; persist(); renderRounds(); update(); $('#modelMessage').textContent = 'Đã lưu lượt ' + rounds.length + ' vào nhật ký. Bổ sung dữ liệu rồi huấn luyện lại cho lượt tiếp theo.';
 };
 $('#resetTests').onclick = () => { tests = []; pending = null; roundSaved = false; testRequest++; $('#mark').hidden = true; $('#prediction').innerHTML = '<div class="prediction-empty"><p>Lượt kiểm tra mới.<br>Bộ ảnh kiểm tra vẫn được giữ riêng.</p></div>'; update(); $('#modelMessage').textContent = 'Đã bắt đầu lượt kiểm tra mới.'; };
@@ -179,12 +182,12 @@ function renderRounds() {
   const comparison = $('#comparison'), box = $('#rounds'); comparison.replaceChildren(); box.replaceChildren();
   if (!rounds.length) { const empty = el('div', 'report-empty'); empty.append(el('h3', '', 'Chưa có lượt kiểm tra nào'), el('p', '', 'Huấn luyện, thử ảnh mới và lưu kết quả để tạo nhật ký.')); const go = el('button', '', 'Tạo lượt kiểm tra đầu tiên →'); go.onclick = () => openTab('model'); empty.append(go); comparison.append(empty); updateJourney(); return; }
   const cards = el('div', 'comparison'), start = Math.max(0, rounds.length - 2);
-  for (let i = start; i < rounds.length; i++) { const r = rounds[i], card = el('div', 'compare-card'), score = el('strong', '', String(r.correct)); score.append(el('small', '', ' / ' + r.total + ' ảnh')); const bar = el('div', 'compare-bar'), fill = el('i'); fill.style.width = (r.correct / r.total * 100) + '%'; bar.append(fill); card.append(el('p', '', 'LƯỢT ' + (i + 1)), score, bar, el('small', '', r.demo ? 'Bộ hình vẽ minh họa' : 'Bộ ảnh tự chọn')); cards.append(card); } comparison.append(cards);
-  rounds.forEach((r, i) => { const sec = el('section', 'round'), left = el('div'), right = el('div'); left.append(el('h3', '', 'Lượt ' + (i + 1)), el('div', 'round-score', r.correct + '/' + r.total)); right.append(el('p', '', r.names.map((n, j) => n + ': ' + r.counts[j] + ' ảnh').join(' · ')), el('p', '', r.change || 'Chưa ghi thay đổi dữ liệu.'), el('small', '', r.demo ? 'Nguồn: hình vẽ minh họa tổng hợp.' : 'Nguồn: ảnh do học sinh chọn.')); sec.append(left, right); box.append(sec); }); updateJourney();
+  for (let i = start; i < rounds.length; i++) { const r = rounds[i], card = el('div', 'compare-card'), score = el('strong', '', String(r.correct)); score.append(el('small', '', ' / ' + r.total + ' ảnh')); const bar = el('div', 'compare-bar'), fill = el('i'); fill.style.width = (r.correct / r.total * 100) + '%'; bar.append(fill); card.append(el('p', '', 'LƯỢT ' + (i + 1)), score, bar, el('small', '', sourceLabel(r))); cards.append(card); } comparison.append(cards);
+  rounds.forEach((r, i) => { const sec = el('section', 'round'), left = el('div'), right = el('div'); left.append(el('h3', '', 'Lượt ' + (i + 1)), el('div', 'round-score', r.correct + '/' + r.total)); right.append(el('p', '', r.names.map((n, j) => n + ': ' + r.counts[j] + ' ảnh').join(' · ')), el('p', '', r.change || 'Chưa ghi thay đổi dữ liệu.'), el('small', '', 'Nguồn: ' + sourceLabel(r) + '.')); sec.append(left, right); box.append(sec); }); updateJourney();
 }
 $('#conclusion').oninput = () => { persist(); updateJourney(); };
 $('#download').onclick = () => {
-  const content = 'DỮ LIỆU LAB — NHẬT KÝ THÍ NGHIỆM\n\n' + rounds.map((r, i) => 'Lượt ' + (i + 1) + '\n' + r.names.map((n, j) => n + ': ' + r.counts[j] + ' ảnh').join('\n') + '\nĐúng: ' + r.correct + '/' + r.total + '\nThay đổi: ' + r.change + '\nNguồn: ' + (r.demo ? 'Hình vẽ minh họa tổng hợp' : 'Ảnh tự chọn') + '\n' + r.tests.map((t, j) => 'Ảnh ' + (j + 1) + ': nhãn thật ' + t.truth + ', dự đoán ' + t.prediction + ', ' + (t.ok ? 'đúng' : 'sai')).join('\n')).join('\n\n') + '\n\nKết luận: ' + $('#conclusion').value;
+  const content = 'DỮ LIỆU LAB — NHẬT KÝ THÍ NGHIỆM\n\n' + rounds.map((r, i) => 'Lượt ' + (i + 1) + '\n' + r.names.map((n, j) => n + ': ' + r.counts[j] + ' ảnh').join('\n') + '\nĐúng: ' + r.correct + '/' + r.total + '\nThay đổi: ' + r.change + '\nNguồn: ' + sourceLabel(r) + '\n' + r.tests.map((t, j) => 'Ảnh ' + (j + 1) + ': nhãn thật ' + t.truth + ', dự đoán ' + t.prediction + ', ' + (t.ok ? 'đúng' : 'sai')).join('\n')).join('\n\n') + '\n\nKết luận: ' + $('#conclusion').value;
   const u = URL.createObjectURL(new Blob(['\ufeff' + content], { type: 'text/plain;charset=utf-8' })), a = el('a'); a.href = u; a.download = 'nhat-ky-du-lieu.txt'; a.click(); setTimeout(() => URL.revokeObjectURL(u), 10000); $('#reportStatus').textContent = 'Đã tạo báo cáo. Trên iPad, chọn lưu vào Tệp.';
 };
 $('#resetAll').onclick = () => { if (confirm('Xóa các lượt và kết luận đã lưu trên thiết bị này?')) { rounds = []; $('#conclusion').value = ''; persist(); renderRounds(); $('#reportStatus').textContent = 'Đã xóa nhật ký.'; } };
