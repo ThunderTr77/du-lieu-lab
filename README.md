@@ -1,52 +1,31 @@
 # Dữ liệu Lab
 
-Web thực hành dữ liệu và học máy dành cho học sinh khối 6–8, thiết kế cho thao tác cảm ứng trên iPad.
+Web thực hành cho học sinh khối 6–8, mỗi em dùng một iPad.
 
-## Chức năng
+**Mở web:** https://thundertr77.github.io/du-lieu-lab/
 
-- Nhận xét 10 tình huống về chất lượng, nhãn và độ đa dạng của dữ liệu.
-- Thêm hoặc chụp ảnh cho hai nhóm đồ vật, huấn luyện bộ phân loại k-NN đơn giản.
-- Kiểm tra bằng ảnh mới, ghi nhãn thật và so sánh các lượt.
-- Lưu nhật ký tại trình duyệt và tải báo cáo văn bản.
+## Ba nhiệm vụ
 
-Không có backend, tài khoản hay API key. Ảnh được xử lý trong bộ nhớ của trình duyệt, không gửi lên máy chủ. Tải lại trang sẽ xóa ảnh và mô hình. Nhật ký lưu trong localStorage của thiết bị.
+- **Chọn dữ liệu:** 10 tình huống có hình minh họa, nhận xét và giải thích theo từng nhiệm vụ.
+- **Huấn luyện ảnh:** đặt hai nhãn, thêm ảnh tự chụp, xóa từng ảnh, huấn luyện rồi thử bằng ảnh mới. Mục tiêu 6 ảnh mỗi nhãn; tối thiểu 3 và tối đa 36.
+- **Nhật ký:** lưu từng lượt, so sánh số ảnh đúng và tải báo cáo văn bản.
 
-## Cách chạy
+Bộ ảnh kiểm tra được giữ riêng trong bộ nhớ để có thể dùng lại cho lượt hai. Mỗi ảnh chỉ được ghi một lần trong một lượt; ảnh đã dùng huấn luyện không được tính làm ảnh kiểm tra mới. Giao diện hiển thị ba ảnh mẫu gần nhất mà mô hình đã dùng để dự đoán.
 
-Mở `index.html` trong trình duyệt hoặc phục vụ thư mục bằng máy chủ tĩnh. Nếu có Python:
+## Mô hình và giới hạn
 
-```sh
-python -m http.server 8000
-```
+Đây là k-NN với k=3 trên ảnh thu nhỏ 16×16 RGB. Huấn luyện lưu một bản dữ liệu; dự đoán so sánh khoảng cách điểm ảnh. Nền, vị trí và ánh sáng có thể ảnh hưởng mạnh. Không tương đương mô hình học sâu của Teachable Machine. Phiếu bầu 3/3 không phải xác suất chắc chắn đúng. So sánh hai lượt chỉ có ý nghĩa khi dùng cùng bộ ảnh kiểm tra và cùng cách chấm.
 
-Mở `http://localhost:8000`. Không cần cài thư viện JavaScript.
+Bộ hình vẽ tích hợp chỉ dùng để thử thao tác. Kết quả của nó không thay thế thực nghiệm với ảnh do học sinh chụp. Các ảnh vật thể trong phần chọn dữ liệu được tạo để minh họa tình huống, không phải kết quả thí nghiệm.
 
-## GitHub Pages
+## Dữ liệu trên thiết bị
 
-Trong repository: **Settings → Pages → Deploy from a branch → main → /(root) → Save**.
-Chờ lần triển khai đầu hoàn tất. Trang web sử dụng đường dẫn tương đối nên chạy được dưới đường dẫn con của GitHub Pages.
+Không cần tài khoản, họ tên hoặc API key. Ảnh được đọc và xử lý trong bộ nhớ của trình duyệt, không được tải lên máy chủ. Tải lại trang sẽ mất ảnh, bộ kiểm tra và mô hình. Nhật ký, kết luận và trạng thái hoàn thành thử thách được lưu trong localStorage; có nút xóa nhật ký và tải báo cáo. Không lưu ảnh vào localStorage.
 
-## Quy trình thực hành
+Trên iPad dùng Safari. Nếu nút Chụp ảnh không mở camera, chụp bằng ứng dụng Camera rồi thêm từ thư viện. Đã kiểm tra bằng trình duyệt và kích thước màn hình mô phỏng; camera trên iPad vật lý cần được giáo viên thử trước giờ học.
 
-1. Chọn hai đồ vật, ví dụ cốc và chai. Đặt đúng hai nhãn.
-2. Thêm ít nhất 6 ảnh mỗi nhãn với các góc và nền phù hợp. Công cụ yêu cầu tối thiểu 3, tối đa 36 ảnh mỗi nhãn.
-3. Giữ riêng 4 ảnh kiểm tra mới, có cả hai nhãn. Không đưa ảnh kiểm tra vào dữ liệu huấn luyện.
-4. Huấn luyện, kiểm tra từng ảnh và chọn nhãn thật để ghi đúng/sai.
-5. Lưu lượt trước khi sửa dữ liệu. Bổ sung dữ liệu, huấn luyện lại và kiểm tra cùng 4 ảnh.
-6. Viết kết luận trong nhật ký và tải báo cáo.
+## Chạy và triển khai
 
-## Phạm vi mô hình
+HTML/CSS/JavaScript thuần, không cần cài gói hoặc backend. Chạy một HTTP server trong thư mục này để xem trước. GitHub Pages phục vụ nhánh `main` từ thư mục gốc, với `.nojekyll`.
 
-Mô hình dùng k=3 trên ảnh thu nhỏ thành 16×16 điểm ảnh RGB. Giai đoạn huấn luyện lưu mẫu có nhãn; giai đoạn dự đoán chọn nhóm được đa số ba ví dụ gần nhất bỏ phiếu. Đây là mô hình đơn giản để học quy trình, khác mô hình học sâu của Teachable Machine và dễ bị nền, ánh sáng, kích thước vật ảnh hưởng.
-
-Phiếu bầu 3/3 không phải xác suất chắc chắn đúng. Bộ ảnh minh họa là hình vẽ tổng hợp và được ghi rõ trong báo cáo. Kết quả trên bốn ảnh là phép thử nhỏ, không chứng minh khả năng nhận dạng trong mọi tình huống.
-
-## iPad
-
-Nên dùng Safari. Nếu nút Chụp ảnh không mở camera, chụp bằng ứng dụng Camera rồi thêm ảnh từ thư viện. Giáo viên cần kiểm tra thao tác trên iPad thật trước buổi học. Không dùng ảnh mặt học sinh hoặc thông tin cá nhân.
-
-## Nguồn tham khảo
-
-- [Teachable Machine](https://teachablemachine.withgoogle.com/)
-- [Google Machine Learning Crash Course](https://developers.google.com/machine-learning/crash-course)
-- [Google PAIR: Searching for Unintended Biases](https://pair.withgoogle.com/explorables/saliency/)
+Các khóa nhật ký `datalab-rounds` và `datalab-conclusion` được giữ tương thích với phiên bản trước.
