@@ -1,0 +1,177 @@
+{
+  "source": "Ảnh minh họa tổng hợp để thực hành",
+  "train": [
+    {
+      "id": "coc-vat-1",
+      "label": 0,
+      "name": "Cốc 1",
+      "src": "assets/library/coc-vat-1.jpg"
+    },
+    {
+      "id": "coc-vat-2",
+      "label": 0,
+      "name": "Cốc 2",
+      "src": "assets/library/coc-vat-2.jpg"
+    },
+    {
+      "id": "coc-vat-3",
+      "label": 0,
+      "name": "Cốc 3",
+      "src": "assets/library/coc-vat-3.jpg"
+    },
+    {
+      "id": "coc-vat-4",
+      "label": 0,
+      "name": "Cốc 4",
+      "src": "assets/library/coc-vat-4.jpg"
+    },
+    {
+      "id": "coc-nen-1-1",
+      "label": 0,
+      "name": "Cốc · nền xanh · 1",
+      "src": "assets/library/coc-nen-1-1.jpg"
+    },
+    {
+      "id": "coc-nen-1-2",
+      "label": 0,
+      "name": "Cốc · nền xanh · 2",
+      "src": "assets/library/coc-nen-1-2.jpg"
+    },
+    {
+      "id": "chai-vat-1",
+      "label": 1,
+      "name": "Chai 1",
+      "src": "assets/library/chai-vat-1.jpg"
+    },
+    {
+      "id": "chai-vat-2",
+      "label": 1,
+      "name": "Chai 2",
+      "src": "assets/library/chai-vat-2.jpg"
+    },
+    {
+      "id": "chai-vat-3",
+      "label": 1,
+      "name": "Chai 3",
+      "src": "assets/library/chai-vat-3.jpg"
+    },
+    {
+      "id": "chai-vat-4",
+      "label": 1,
+      "name": "Chai 4",
+      "src": "assets/library/chai-vat-4.jpg"
+    },
+    {
+      "id": "chai-nen-1-1",
+      "label": 1,
+      "name": "Chai · nền hồng · 1",
+      "src": "assets/library/chai-nen-1-1.jpg"
+    },
+    {
+      "id": "chai-nen-1-2",
+      "label": 1,
+      "name": "Chai · nền hồng · 2",
+      "src": "assets/library/chai-nen-1-2.jpg"
+    }
+  ],
+  "test": [
+    {
+      "id": "coc-kiem-tra-1",
+      "label": 0,
+      "name": "Cốc kiểm tra 1",
+      "src": "assets/library/coc-kiem-tra-1.jpg"
+    },
+    {
+      "id": "coc-kiem-tra-2",
+      "label": 0,
+      "name": "Cốc kiểm tra 2",
+      "src": "assets/library/coc-kiem-tra-2.jpg"
+    },
+    {
+      "id": "coc-kiem-tra-3",
+      "label": 0,
+      "name": "Cốc kiểm tra 3",
+      "src": "assets/library/coc-kiem-tra-3.jpg"
+    },
+    {
+      "id": "coc-kiem-tra-4",
+      "label": 0,
+      "name": "Cốc kiểm tra 4",
+      "src": "assets/library/coc-kiem-tra-4.jpg"
+    },
+    {
+      "id": "chai-kiem-tra-1",
+      "label": 1,
+      "name": "Chai kiểm tra 1",
+      "src": "assets/library/chai-kiem-tra-1.jpg"
+    },
+    {
+      "id": "chai-kiem-tra-2",
+      "label": 1,
+      "name": "Chai kiểm tra 2",
+      "src": "assets/library/chai-kiem-tra-2.jpg"
+    },
+    {
+      "id": "chai-kiem-tra-3",
+      "label": 1,
+      "name": "Chai kiểm tra 3",
+      "src": "assets/library/chai-kiem-tra-3.jpg"
+    },
+    {
+      "id": "chai-kiem-tra-4",
+      "label": 1,
+      "name": "Chai kiểm tra 4",
+      "src": "assets/library/chai-kiem-tra-4.jpg"
+    }
+  ],
+  "background": [
+    {
+      "id": "coc-nen-1-1",
+      "label": 0,
+      "name": "Cốc · nền xanh · 1",
+      "src": "assets/library/coc-nen-1-1.jpg"
+    },
+    {
+      "id": "coc-nen-1-2",
+      "label": 0,
+      "name": "Cốc · nền xanh · 2",
+      "src": "assets/library/coc-nen-1-2.jpg"
+    },
+    {
+      "id": "coc-nen-2-1",
+      "label": 0,
+      "name": "Cốc · nền hồng · 1",
+      "src": "assets/library/coc-nen-2-1.jpg"
+    },
+    {
+      "id": "coc-nen-2-2",
+      "label": 0,
+      "name": "Cốc · nền hồng · 2",
+      "src": "assets/library/coc-nen-2-2.jpg"
+    },
+    {
+      "id": "chai-nen-1-1",
+      "label": 1,
+      "name": "Chai · nền hồng · 1",
+      "src": "assets/library/chai-nen-1-1.jpg"
+    },
+    {
+      "id": "chai-nen-1-2",
+      "label": 1,
+      "name": "Chai · nền hồng · 2",
+      "src": "assets/library/chai-nen-1-2.jpg"
+    },
+    {
+      "id": "chai-nen-2-1",
+      "label": 1,
+      "name": "Chai · nền xanh · 1",
+      "src": "assets/library/chai-nen-2-1.jpg"
+    },
+    {
+      "id": "chai-nen-2-2",
+      "label": 1,
+      "name": "Chai · nền xanh · 2",
+      "src": "assets/library/chai-nen-2-2.jpg"
+    }
+  ]
+}

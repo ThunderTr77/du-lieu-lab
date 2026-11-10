@@ -4,11 +4,18 @@ Web thực hành cho học sinh khối 6–8, mỗi em dùng một iPad.
 
 **Mở web:** https://thundertr77.github.io/du-lieu-lab/
 
-## Ba nhiệm vụ
+## Bốn trạm thực hành
 
 - **Chọn dữ liệu:** 10 tình huống có hình minh họa, nhận xét và giải thích theo từng nhiệm vụ.
+- **Xưởng dữ liệu:** gán nhãn 12 ảnh cốc/chai, sửa nhãn sai và chuyển bộ ảnh sang huấn luyện. Lọc bản sao trong 10 thẻ ảnh, giữ lại 6 ảnh khác nhau.
 - **Huấn luyện ảnh:** đặt hai nhãn, thêm ảnh tự chụp, xóa từng ảnh, huấn luyện rồi thử bằng ảnh mới. Mục tiêu 6 ảnh mỗi nhãn; tối thiểu 3 và tối đa 36.
 - **Nhật ký:** lưu từng lượt, so sánh số ảnh đúng và tải báo cáo văn bản.
+
+## Kho ảnh tải xuống
+
+Mở `tai-anh.html` để tải từng JPEG hoặc ba bộ ZIP: 12 ảnh huấn luyện, 8 ảnh kiểm tra độc lập và 8 ảnh thí nghiệm nền. Giải nén trong ứng dụng Tệp trên iPad. Ảnh được tạo để minh họa, không phải kết quả thí nghiệm. Ảnh kiểm tra khác ảnh huấn luyện; một phần bộ nền có thể trùng bộ huấn luyện để đối chiếu điều kiện chụp.
+
+Các liên kết trực tiếp: `#quality`, `#workshop-labels`, `#workshop-duplicates`, `#model`, `#report`. Hoạt động gán nhãn chuyển 12 ảnh học và 4 ảnh kiểm tra riêng sang phòng huấn luyện. Kết quả từ ảnh thư viện được ghi rõ nguồn, tách khỏi nguồn ảnh học sinh tự thêm.
 
 Bộ ảnh kiểm tra được giữ riêng trong bộ nhớ để có thể dùng lại cho lượt hai. Mỗi ảnh chỉ được ghi một lần trong một lượt; ảnh đã dùng huấn luyện không được tính làm ảnh kiểm tra mới. Giao diện hiển thị ba ảnh mẫu gần nhất mà mô hình đã dùng để dự đoán.
 

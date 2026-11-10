@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#142d4e"><meta name="description" content="Thực hành chọn dữ liệu, huấn luyện bộ phân loại ảnh và so sánh kết quả trên iPad. Không cần tài khoản.">
-  <title>Dữ liệu Lab · Thử nghiệm AI</title><link rel="stylesheet" href="style.css?v=2">
+  <title>Dữ liệu Lab · Thử nghiệm AI</title><link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <a class="skip" href="#workspace">Vào phần thực hành</a>
-<header class="site-header"><a class="brand" href="./" aria-label="Dữ liệu Lab — trang chủ"><span class="brand-icon" aria-hidden="true">DL</span><span>Dữ liệu <b>Lab</b></span></a><div class="header-meta"><span class="online-dot" aria-hidden="true"></span>Không cần tài khoản <span class="class-pill">Khối 6–8</span></div></header>
+<header class="site-header"><a class="brand" href="./" aria-label="Dữ liệu Lab — trang chủ"><span class="brand-icon" aria-hidden="true">DL</span><span>Dữ liệu <b>Lab</b></span></a><div class="header-meta"><span class="online-dot" aria-hidden="true"></span>Không cần tài khoản <a class="header-resource" href="tai-anh.html">Kho ảnh ↓</a><span class="class-pill">Khối 6–8</span></div></header>
 <main>
   <section class="intro" aria-labelledby="introTitle">
     <div><p class="eyebrow">PHÒNG THỰC HÀNH AI</p><h1 id="introTitle">Huấn luyện AI<br>bằng ảnh của em<span>.</span></h1><p>Chọn dữ liệu, thử với ảnh mới và tìm cách giúp mô hình nhận đúng hơn.</p><div class="hero-actions"><button id="startQuality">Bắt đầu thử thách <span aria-hidden="true">↗</span></button><button id="startModel" class="text-button">Vào phòng huấn luyện <span aria-hidden="true">→</span></button></div></div>
@@ -15,11 +15,12 @@
   </section>
 
   <div id="workspace" class="workspace">
-    <div class="journey-heading"><p class="eyebrow">BA NHIỆM VỤ CỦA EM</p><span id="missionCount">0/3 hoàn thành</span></div>
+    <div class="journey-heading"><p class="eyebrow">BỐN TRẠM THỰC HÀNH</p><span id="missionCount">0/4 hoàn thành</span></div>
     <nav class="mission-nav" role="tablist" aria-label="Các nhiệm vụ">
       <button id="tab-quality" role="tab" aria-selected="true" aria-controls="quality" data-tab="quality" class="active"><span class="mission-number" id="badge-quality">01</span><span><b>Chọn dữ liệu</b><small>10 tình huống có hình</small></span><span class="mission-arrow" aria-hidden="true">→</span></button>
-      <button id="tab-model" role="tab" aria-selected="false" aria-controls="model" data-tab="model" tabindex="-1"><span class="mission-number" id="badge-model">02</span><span><b>Huấn luyện ảnh</b><small>Tạo mô hình của riêng em</small></span><span class="mission-arrow" aria-hidden="true">→</span></button>
-      <button id="tab-report" role="tab" aria-selected="false" aria-controls="report" data-tab="report" tabindex="-1"><span class="mission-number" id="badge-report">03</span><span><b>Nhật ký thí nghiệm</b><small>So sánh hai lượt kiểm tra</small></span><span class="mission-arrow" aria-hidden="true">→</span></button>
+      <button id="tab-workshop" role="tab" aria-selected="false" aria-controls="workshop" data-tab="workshop" tabindex="-1"><span class="mission-number" id="badge-workshop">02</span><span><b>Xưởng dữ liệu</b><small>Gán nhãn · lọc ảnh trùng</small></span><span class="mission-arrow" aria-hidden="true">→</span></button>
+      <button id="tab-model" role="tab" aria-selected="false" aria-controls="model" data-tab="model" tabindex="-1"><span class="mission-number" id="badge-model">03</span><span><b>Huấn luyện ảnh</b><small>Tạo mô hình của riêng em</small></span><span class="mission-arrow" aria-hidden="true">→</span></button>
+      <button id="tab-report" role="tab" aria-selected="false" aria-controls="report" data-tab="report" tabindex="-1"><span class="mission-number" id="badge-report">04</span><span><b>Nhật ký thí nghiệm</b><small>So sánh hai lượt kiểm tra</small></span><span class="mission-arrow" aria-hidden="true">→</span></button>
     </nav>
 
     <section id="quality" class="tab" role="tabpanel" aria-labelledby="tab-quality">
@@ -27,8 +28,16 @@
       <div id="case"></div><div id="caseFeedback" role="status" aria-live="polite"></div><div class="quiz-bottom"><p id="caseProgress"></p><button id="nextCase" hidden>Tình huống tiếp theo <span aria-hidden="true">→</span></button></div>
     </section>
 
+    <section id="workshop" class="tab" role="tabpanel" aria-labelledby="tab-workshop" hidden>
+ <div class="section-head"><div><p class="eyebrow">NHIỆM VỤ 02</p><h2 tabindex="-1">Xưởng dữ liệu</h2><p>Tự gán nhãn và loại các bản sao trước khi huấn luyện.</p></div><a class="upload secondary" href="tai-anh.html">Mở kho ảnh ↓</a></div>
+ <div class="workshop-tabs" role="tablist" aria-label="Hoạt động xưởng dữ liệu"><button role="tab" id="ws-labels" aria-selected="true" aria-controls="label-lab" data-workshop="labels" class="active">Gán nhãn 12 ảnh</button><button role="tab" id="ws-duplicates" aria-selected="false" aria-controls="duplicate-lab" data-workshop="duplicates" tabindex="-1">Lọc ảnh trùng</button></div>
+ <section id="label-lab" role="tabpanel" aria-labelledby="ws-labels"><div class="workshop-instruction"><h3>Chọn Cốc hoặc Chai cho từng ảnh</h3><span id="labelCount" class="count">0/12 ảnh có nhãn</span></div><div id="labelGrid" class="label-grid"></div><p id="labelFeedback" class="workshop-feedback" role="status"></p><div class="action-row"><button id="checkLabels">Kiểm tra bộ nhãn</button><button id="resetLabels" class="secondary">Gán nhãn lại</button><button id="useLabeledData" class="secondary" disabled>Dùng bộ này để huấn luyện →</button></div></section>
+ <section id="duplicate-lab" role="tabpanel" aria-labelledby="ws-duplicates" hidden><div class="workshop-instruction"><div><h3>Loại bản sao, giữ mỗi ảnh một lần</h3><p>Ảnh khác góc chụp vẫn là ảnh khác. Bấm vào ảnh muốn loại.</p></div><span id="duplicateCount" class="count">Đang giữ 10 ảnh</span></div><div id="duplicateGrid" class="duplicate-grid"></div><p id="duplicateFeedback" class="workshop-feedback" role="status"></p><div class="action-row"><button id="checkDuplicates">Kiểm tra bộ ảnh</button><button id="resetDuplicates" class="secondary">Làm lại</button></div></section>
+ <p class="small">Ảnh trong xưởng là ảnh minh họa tổng hợp. Có thể tải các bộ ảnh ở Kho ảnh để dùng trong công cụ khác.</p>
+</section>
+
     <section id="model" class="tab" role="tabpanel" aria-labelledby="tab-model" hidden>
-      <div class="section-head"><div><p class="eyebrow">NHIỆM VỤ 02</p><h2 tabindex="-1">Bộ phân loại của em</h2><p>Hai đồ vật · Ít nhất 6 ảnh mỗi nhãn · 4 ảnh kiểm tra riêng</p></div><button id="demo" class="secondary">Thử bộ ảnh minh họa <span aria-hidden="true">↗</span></button></div>
+      <div class="section-head"><div><p class="eyebrow">NHIỆM VỤ 03</p><h2 tabindex="-1">Bộ phân loại của em</h2><p>Hai đồ vật · Ít nhất 6 ảnh mỗi nhãn · 4 ảnh kiểm tra riêng</p></div><button id="demo" class="secondary">Thử bộ ảnh minh họa <span aria-hidden="true">↗</span></button></div>
       <div class="studio-guide"><span><b>1</b> Thu thập ảnh</span><span><b>2</b> Huấn luyện</span><span><b>3</b> Kiểm tra ảnh mới</span><span><b>4</b> Bổ sung và so sánh</span></div>
       <div class="classes">
         <section class="class-card"><div class="class-top"><span class="class-letter">A</span><label for="name0">Nhãn thứ nhất</label><span id="count0" class="count">0 ảnh</span></div><input id="name0" value="Cốc" maxlength="24"><div id="gallery0" class="gallery"></div><div class="collection-goal"><span id="goal0">Mục tiêu: 6 ảnh</span><div class="goal-track"><i id="fill0"></i></div></div><div class="uploads"><label class="upload">Chụp ảnh<input type="file" accept="image/*" capture="environment" data-class="0" aria-label="Chụp ảnh cho nhãn thứ nhất"></label><label class="upload secondary">Thêm từ thư viện<input type="file" accept="image/*" multiple data-class="0" aria-label="Thêm ảnh cho nhãn thứ nhất"></label></div><button class="plain" data-clear="0">Xóa ảnh nhãn này</button></section>
@@ -44,11 +53,11 @@
     </section>
 
     <section id="report" class="tab" role="tabpanel" aria-labelledby="tab-report" hidden>
-      <div class="section-head"><div><p class="eyebrow">NHIỆM VỤ 03</p><h2 tabindex="-1">Nhật ký thí nghiệm</h2><p>So sánh hai lượt bằng cùng bộ ảnh kiểm tra.</p></div><button id="backToModel" class="secondary">Tiếp tục huấn luyện →</button></div>
+      <div class="section-head"><div><p class="eyebrow">NHIỆM VỤ 04</p><h2 tabindex="-1">Nhật ký thí nghiệm</h2><p>So sánh hai lượt bằng cùng bộ ảnh kiểm tra.</p></div><button id="backToModel" class="secondary">Tiếp tục huấn luyện →</button></div>
       <div id="comparison"></div><div id="rounds"></div><section class="panel conclusion-panel"><h3>Kết luận của em</h3><p>Nêu số ảnh đúng, dữ liệu đã thay đổi và một trường hợp còn nhận sai.</p><label class="sr-only" for="conclusion">Kết luận dựa trên kết quả</label><textarea id="conclusion" rows="4" placeholder="Lượt 1 đúng …/4; lượt 2 đúng …/4. Em đã thêm … Ảnh … vẫn bị nhận nhầm."></textarea><div class="action-row"><button id="download">Tải báo cáo văn bản ↓</button><button id="resetAll" class="plain">Xóa nhật ký đã lưu</button></div><p id="reportStatus" class="message" role="status"></p></section>
     </section>
   </div>
   <footer><span><b>Dữ liệu Lab</b> · Ảnh được xử lý trên thiết bị, không gửi lên máy chủ.</span><a href="https://teachablemachine.withgoogle.com/train/image" target="_blank" rel="noopener">Khám phá Teachable Machine ↗</a></footer>
 </main>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script><script src="workshop.js?v=4"></script>
 </body></html>

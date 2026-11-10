@@ -1,0 +1,5 @@
+'use strict';
+let resourceLibrary;
+function renderResources() { const grid = document.querySelector('#resourceGrid'); grid.replaceChildren(); for (const sample of resourceLibrary[document.querySelector('#resourceFilter').value]) { const card = document.createElement('article'); card.className = 'resource-photo'; const img = new Image(); img.src = sample.src; img.alt = sample.name; img.loading = 'lazy'; const label = document.createElement('b'); label.textContent = sample.name; const a = document.createElement('a'); a.href = sample.src; a.download = sample.id + '.jpg'; a.textContent = 'Tải ảnh ↓'; a.className = 'text-button'; card.append(img, label, a); grid.append(card); } }
+fetch('library.json?v=4').then(r => { if (!r.ok) throw Error(); return r.json(); }).then(data => { resourceLibrary = data; renderResources(); }).catch(() => { document.querySelector('#resourceStatus').textContent = 'Chưa tải được ảnh. Hãy kiểm tra Internet rồi tải lại trang.'; });
+document.querySelector('#resourceFilter').onchange = () => { if (resourceLibrary) renderResources(); };

@@ -15,9 +15,12 @@ const cases = [
   ['Tiếng ồn nhẹ trong lớp', 'Ứng dụng nhận lệnh trong lớp có tiếng ồn nhẹ. Lời nói vẫn nghe rõ và nhãn đúng.', 0, 'Mẫu phản ánh môi trường sử dụng. Thử thêm nhiều giọng và mức ồn phù hợp để kiểm tra độ ổn định.']
 ];
 let ci = 0, answered = false, quizAnswers = Array(10).fill(null), qualityDone = false, hasTrained = false;
+let workshopProgress = { labels: false, duplicates: false };
+try { workshopProgress = { ...workshopProgress, ...JSON.parse(localStorage.getItem('datalab-workshop') || '{}') }; } catch {}
 try { qualityDone = localStorage.getItem('datalab-quality-done') === 'true'; } catch {}
 
-function openTab(id, focus = true) {
+function openTab(id, focus = true, updateHash = true) {
+  if (updateHash && location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
   $$('[data-tab]').forEach(b => { const active = b.dataset.tab === id; b.classList.toggle('active', active); b.setAttribute('aria-selected', String(active)); b.tabIndex = active ? 0 : -1; });
   $$('.tab').forEach(t => { t.hidden = t.id !== id; });
   if (focus) { $('#' + id + ' h2').focus({ preventScroll: true }); $('#workspace').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); }
@@ -91,9 +94,9 @@ function vector(img) { const c = document.createElement('canvas'); c.width = c.h
 function readData(url, origin = 'upload') { return new Promise((resolve, reject) => { const img = new Image(); img.onload = () => { try { const c = document.createElement('canvas'), s = Math.min(1, 384 / Math.max(img.width, img.height)); c.width = Math.max(1, Math.round(img.width * s)); c.height = Math.max(1, Math.round(img.height * s)); const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height); const data = c.toDataURL('image/jpeg', .8); resolve({ url: data, v: vector(img), key: keyFor(data), origin }); } catch { reject(Error('Không xử lý được ảnh. Hãy thử ảnh JPG hoặc PNG.')); } }; img.onerror = () => reject(Error('Không đọc được ảnh. Hãy thử ảnh JPG hoặc PNG.')); img.src = url; }); }
 async function fromFile(f) { if (!f.type.startsWith('image/')) throw Error('Hãy chọn tệp ảnh.'); if (f.size > 25 * 1024 * 1024) throw Error('Ảnh quá lớn. Hãy dùng ảnh dưới 25 MB.'); const u = URL.createObjectURL(f); try { return await readData(u); } finally { URL.revokeObjectURL(u); } }
 function updateJourney() {
-  const done = [qualityDone, hasTrained || rounds.length > 0, rounds.length >= 2 && $('#conclusion').value.trim().length > 0];
-  ['quality', 'model', 'report'].forEach((id, i) => { const b = $('#badge-' + id); b.textContent = done[i] ? '✓' : '0' + (i + 1); b.classList.toggle('complete', done[i]); b.setAttribute('aria-label', done[i] ? 'Nhiệm vụ đã hoàn thành' : 'Nhiệm vụ ' + (i + 1)); });
-  $('#missionCount').textContent = done.filter(Boolean).length + '/3 hoàn thành';
+  const done = [qualityDone, workshopProgress.labels && workshopProgress.duplicates, hasTrained || rounds.length > 0, rounds.length >= 2 && $('#conclusion').value.trim().length > 0];
+  ['quality', 'workshop', 'model', 'report'].forEach((id, i) => { const b = $('#badge-' + id); b.textContent = done[i] ? '✓' : '0' + (i + 1); b.classList.toggle('complete', done[i]); b.setAttribute('aria-label', done[i] ? 'Nhiệm vụ đã hoàn thành' : 'Nhiệm vụ ' + (i + 1)); });
+  $('#missionCount').textContent = done.filter(Boolean).length + '/4 hoàn thành';
 }
 function renderBank() {
   const g = $('#bankGallery'); g.replaceChildren();
@@ -167,8 +170,8 @@ $('#demo').onclick = async () => {
   finally { uploadJobs--; update(); }
 };
 $('#demoTest').onclick = () => { if (testBank.length) predict(testBank[demoCounter++ % testBank.length]); };
-function sourceOf(origins) { const demo = origins.some(o => o === 'demo' || o === 'mixed'), upload = origins.some(o => o === 'upload' || o === 'mixed'); return demo && upload ? 'mixed' : demo ? 'demo' : 'upload'; }
-function sourceLabel(r) { return r.source === 'mixed' ? 'Ảnh tự chọn và hình vẽ minh họa' : r.demo || r.source === 'demo' ? 'Hình vẽ minh họa tổng hợp' : 'Ảnh tự chọn'; }
+function sourceOf(origins) { const kinds = new Set(origins.map(o => ['demo','library','mixed'].includes(o) ? o : 'upload')); return kinds.has('mixed') || kinds.size > 1 ? 'mixed' : [...kinds][0] || 'upload'; }
+function sourceLabel(r) { return r.source === 'mixed' ? 'Ảnh từ nhiều nguồn' : r.source === 'library' ? 'Ảnh thư viện minh họa' : r.demo || r.source === 'demo' ? 'Hình vẽ minh họa tổng hợp' : 'Ảnh tự chọn'; }
 function persist() { try { localStorage.setItem('datalab-rounds', JSON.stringify(rounds)); localStorage.setItem('datalab-conclusion', $('#conclusion').value); } catch { $('#reportStatus').textContent = 'Trình duyệt không cho lưu nhật ký. Hãy tải báo cáo trước khi đóng trang.'; } }
 $('#saveRound').onclick = () => {
   if (roundSaved) return;
@@ -192,3 +195,7 @@ $('#download').onclick = () => {
 };
 $('#resetAll').onclick = () => { if (confirm('Xóa các lượt và kết luận đã lưu trên thiết bị này?')) { rounds = []; $('#conclusion').value = ''; persist(); renderRounds(); $('#reportStatus').textContent = 'Đã xóa nhật ký.'; } };
 renderCase(); renderRounds(); update();
+
+function routeFromHash() { const hash = location.hash.slice(1); const id = hash.startsWith('workshop') ? 'workshop' : hash; if (!['quality','workshop','model','report'].includes(id)) return; openTab(id, true, false); if (hash.startsWith('workshop-')) dispatchEvent(new CustomEvent('lab-workshop-route', {detail:hash.slice(9)})); }
+addEventListener('hashchange', routeFromHash);
+if (location.hash) routeFromHash();
